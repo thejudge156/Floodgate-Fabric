@@ -1,8 +1,8 @@
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
-    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'java'
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
@@ -55,22 +55,34 @@ dependencies {
     // Lombok
     compileOnly "org.projectlombok:lombok:${project.lombok_version}"
     annotationProcessor "org.projectlombok:lombok:${project.lombok_version}"
+
+    // Geyser dependency for the fun injector mixin :)))
+    modCompileOnly("org.geysermc.geyser:fabric:2.2.2-SNAPSHOT") {
+        transitive = false
+    }
 }
 
 repositories {
-    //mavenLocal()
+    mavenCentral()
     maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
-    // Standard OpenCollab repositories
     maven {
-        name = 'opencollab-release-repo'
-        url = 'https://repo.opencollab.dev/maven-releases/'
-        //TODO set as releases
+        url = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
     }
     maven {
-        name = 'opencollab-snapshot-repo'
-        url = 'https://repo.opencollab.dev/maven-snapshots/'
+        url = 'https://maven.fabricmc.net/'
+    }
+    // Standard OpenCollab repositories
+    maven {
+        url = "https://jitpack.io"
+        content {
+            includeGroupByRegex("com.github.*")
+        }
+    }
+    maven {
+        name = 'opencollab-main-repo'
+        url = 'https://repo.opencollab.dev/main/'
     }
 }
 
@@ -113,7 +125,6 @@ task remappedShadowJar(type: RemapJarTask) {
     dependsOn tasks.shadowJar
     input = tasks.shadowJar.archiveFile
     addNestedDependencies = true
-    archiveName = "floodgate-fabric.jar"
 }
 
 task remappedModrinthJar(type: RemapJarTask) {
